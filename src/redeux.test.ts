@@ -1,4 +1,5 @@
-import { Message, redeux } from "./index";
+import { Message } from './message-factory'
+import { redeux } from "./redeux";
 
 const reduxTest = (name = "@@REDEUX::TEST") => ({
 	type: Symbol(name),
