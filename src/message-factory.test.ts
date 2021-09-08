@@ -3,7 +3,7 @@ import {
 	createPayloadMessageFactory,
 } from "./message-factory";
 
-describe("createEmptyMessageFactory", () => {
+describe("createMessageFactory", () => {
 	it("emits a an object that can be used for managing messages", () => {
 		const messageFactory = createMessageFactory("@@REDEUX::TEST");
 
@@ -67,7 +67,7 @@ describe("createEmptyMessageFactory", () => {
 describe("createPayloadMessageFactory", () => {
 	it("emits a an object that can be used for managing messages", () => {
 		const payloadFactory = () => true;
-		const payloadValidator = (payload: unknown): payload is boolean => true;
+		const payloadValidator = (_payload: unknown): _payload is boolean => true;
 		const messageFactory = createPayloadMessageFactory(
 			"@@REDEUX::TEST",
 			payloadFactory,
@@ -84,7 +84,7 @@ describe("createPayloadMessageFactory", () => {
 	});
 	it("provides the ability to pass in a payload factory for setting data on the message", () => {
 		const payloadFactory = () => true;
-		const payloadValidator = (payload: unknown): payload is boolean => true;
+		const payloadValidator = (_payload: unknown): _payload is boolean => true;
 		const messageFactory = createPayloadMessageFactory(
 			"@@REDEUX::TEST",
 			payloadFactory,
@@ -98,6 +98,36 @@ describe("createPayloadMessageFactory", () => {
 			}
 		`);
 	});
+	it('allows the payload factory to accept parameters with type safety', () => {
+		const payloadFactory = (setMe: boolean, notSet: null) => {
+			return setMe ? 'set' : notSet
+		}
+
+		const payloadValidator = (_payload: unknown): _payload is ReturnType<typeof payloadFactory> => true
+		const messageFactory = createPayloadMessageFactory(
+			"@@REDEUX::TEST",
+			payloadFactory,
+			payloadValidator
+		);
+
+		// @ts-expect-error Expected 2 arguments, but got 0.ts(2554)
+		const _notEnoughParams = messageFactory.create()
+		// @ts-expect-error Argument of type 'string' is not assignable to parameter of type 'boolean'.ts(2345)
+		const _improperParams1 = messageFactory.create("string", "string")
+		// @ts-expect-error Argument of type '"string"' is not assignable to parameter of type 'null'.ts(2345)
+		const _improperParams2 = messageFactory.create(true, "string")
+		// @ts-expect-error Argument of type 'string' is not assignable to parameter of type 'boolean'.ts(2345)
+		const _improperParams3 = messageFactory.create("string", null)
+
+		const goodMessage = messageFactory.create(false, null)
+
+		expect(goodMessage).toMatchInlineSnapshot(`
+			Object {
+			  "payload": null,
+			  "type": Symbol(@@REDEUX::TEST),
+			}
+		`);
+	})
 	it("will throw an error on `create` when payload factory does not match validator requirements", () => {
 		const payloadFactory = () => true;
 		const payloadValidator = (payload: unknown): payload is string =>

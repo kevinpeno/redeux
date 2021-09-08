@@ -1,4 +1,4 @@
-import { Flatten, isRecordOf, PredicateType } from "./utils";
+import { isRecordOf, PredicateType } from "./utils";
 
 export type Message = {
 	type: symbol
@@ -43,7 +43,7 @@ export type PayloadMessage<T = unknown> =
 export function createPayloadMessageFactory<
 	Validator extends (payload: unknown) => boolean,
 	// We enforce the predicate as the return type because validator owns the type assersion
-	Factory extends (...args: unknown[]) => PredicateType<Validator>
+	Factory extends (...args: any[]) => PredicateType<Validator>
 >(
 	name: string,
 	payloadFactory: Factory,
@@ -51,7 +51,7 @@ export function createPayloadMessageFactory<
 ) {
 	const messageFactory = createMessageFactory(name)
 	const creator = (...args: Parameters<Factory>) => {
-		const payload = payloadFactory(args)
+		const payload = payloadFactory.apply(null, args)
 
 		if (!payloadValidator(payload)) {
 			throw new Error('payload does not meet validator requirements')
