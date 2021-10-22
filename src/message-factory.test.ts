@@ -4,16 +4,16 @@ import {
 } from "./message-factory"
 
 describe("createMessageFactory", () => {
-	it("emits a an object that can be used for managing messages", () => {
+	it("emits an object that can be used for managing messages", () => {
 		const messageFactory = createMessageFactory("@@REDEUX::TEST")
 
 		expect(messageFactory).toMatchInlineSnapshot(`
-		Object {
-		  "create": [Function],
-		  "type": Symbol(@@REDEUX::TEST),
-		  "validate": [Function],
-		}
-	`)
+			Object {
+				"create": [Function],
+				"type": Symbol(@@REDEUX::TEST),
+				"validate": [Function],
+			}
+		`)
 	})
 	it("sets the message type to a symbol containing the friendly name", () => {
 		const message = createMessageFactory("@@REDEUX::TEST").create()
@@ -75,12 +75,12 @@ describe("createPayloadMessageFactory", () => {
 		)
 
 		expect(messageFactory).toMatchInlineSnapshot(`
-		Object {
-		  "create": [Function],
-		  "type": Symbol(@@REDEUX::TEST),
-		  "validate": [Function],
-		}
-	`)
+			Object {
+				"create": [Function],
+				"type": Symbol(@@REDEUX::TEST),
+				"validate": [Function],
+			}
+		`)
 	})
 	it("provides the ability to pass in a payload factory for setting data on the message", () => {
 		const payloadFactory = () => true
@@ -93,8 +93,8 @@ describe("createPayloadMessageFactory", () => {
 
 		expect(messageFactory.create()).toMatchInlineSnapshot(`
 			Object {
-			  "payload": true,
-			  "type": Symbol(@@REDEUX::TEST),
+				"payload": true,
+				"type": Symbol(@@REDEUX::TEST),
 			}
 		`)
 	})
@@ -125,8 +125,8 @@ describe("createPayloadMessageFactory", () => {
 
 		expect(goodMessage).toMatchInlineSnapshot(`
 			Object {
-			  "payload": null,
-			  "type": Symbol(@@REDEUX::TEST),
+				"payload": null,
+				"type": Symbol(@@REDEUX::TEST),
 			}
 		`)
 	})
